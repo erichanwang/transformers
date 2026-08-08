@@ -148,6 +148,30 @@ def _with_tmpdir_cache_fallback(fn):
                 file=sys.stderr,
                 flush=True,
             )
+            _repo_cache_dir = f"/mnt/cache/hub/models--hf-internal-testing--tiny-processor-qwen3_asr"
+            if os.path.exists(_repo_cache_dir):
+                _listing_lines = []
+                for _root, _dirs, _files in os.walk(_repo_cache_dir):
+                    _rel = os.path.relpath(_root, _repo_cache_dir)
+                    for _fname in _files:
+                        _fpath = os.path.join(_root, _fname)
+                        _is_link = os.path.islink(_fpath)
+                        _link_target = os.readlink(_fpath) if _is_link else ""
+                        _listing_lines.append(
+                            f"  {_rel}/{_fname}" + (f" -> {_link_target}" if _is_link else "")
+                        )
+                print(
+                    f"[CI_CACHE_FALLBACK] qwen3_asr cache listing ({_repo_cache_dir}):\n"
+                    + ("\n".join(_listing_lines) if _listing_lines else "  (empty)"),
+                    file=sys.stderr,
+                    flush=True,
+                )
+            else:
+                print(
+                    f"[CI_CACHE_FALLBACK] qwen3_asr cache dir not found: {_repo_cache_dir}",
+                    file=sys.stderr,
+                    flush=True,
+                )
             import huggingface_hub.constants as hf_constants
 
             with (
