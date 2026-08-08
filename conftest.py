@@ -21,6 +21,7 @@ import functools
 import os
 import re
 import sys
+import traceback
 import tempfile
 import warnings
 from os.path import abspath, dirname, join
@@ -139,6 +140,11 @@ def _with_tmpdir_cache_fallback(fn):
             print(
                 f"[CI_CACHE_FALLBACK] read-only cache hit for {repo_id!r} ({type(e).__name__}); "
                 "retrying via writable tmp cache_dir with Xet disabled",
+                file=sys.stderr,
+                flush=True,
+            )
+            print(
+                f"[CI_CACHE_FALLBACK] call stack:\n{''.join(traceback.format_stack())}",
                 file=sys.stderr,
                 flush=True,
             )
